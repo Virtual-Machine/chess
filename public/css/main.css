@@ -1,0 +1,43 @@
+html, body {
+	height: 100%;
+	background-color: #777;
+}
+
+#board {
+	margin-top: 20px;
+	width: 600px;
+	height: 600px;
+	padding: 0px;
+	background-color: #1B5658;
+}
+
+.container {
+	height: 100%;
+}
+
+.cell {
+	float: left;
+	width:12.5%;
+	height:12.5%;
+}
+
+.holder {
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	font-size: 40px;
+	line-height: 75px;
+	z-index: 5;
+}
+
+.light {
+	background-color: #649877;
+}
+
+.white {
+	color: #eee;
+}
+
+.black {
+	color: #111;
+}
