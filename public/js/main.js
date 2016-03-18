@@ -43,8 +43,12 @@ class ChessEngine {
 					if (response){
 						if(this.production){
 							if (this.whiteTurn){
+								$('#wYourTurn').css("visibility", "hidden");
+								$('#bYourTurn').css("visibility", "visible");
 								this.removePassants("Black");
 							} else {
+								$('#wYourTurn').css("visibility", "visible");
+								$('#bYourTurn').css("visibility", "hidden");
 								this.removePassants("White");
 							}
 							this.whiteTurn = !this.whiteTurn;	
@@ -78,6 +82,8 @@ class ChessEngine {
 		for(var i in upgradeSquares){
 			var check = this.grid[upgradeSquares[i]]
 			if(check instanceof Pawn){
+				$('#wYourTurn').css("visibility", "hidden");
+				$('#bYourTurn').css("visibility", "hidden");
 				$('#pieceWindow').css('visibility', 'visible');
 				$('#pieceWindow').data('coords', upgradeSquares[i])
 				$('#pieceWindow').data('color', check.color)
@@ -275,4 +281,9 @@ function submitValue(){
 			break;
 	}
 	chessEngine.pause = false;
+	if(chessEngine.whiteTurn){
+		$('#wYourTurn').css("visibility", "visible");
+	} else {
+		$('#bYourTurn').css("visibility", "visible");
+	}
 }

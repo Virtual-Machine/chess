@@ -33,6 +33,17 @@ html, body {
 	height: 300px;
 }
 
+#bYourTurn {
+	visibility: hidden;
+	color: #D6812D;
+	font-size: 20px;
+}
+
+#wYourTurn {
+	color: #D6812D;
+	font-size: 20px;
+}
+
 .container {
 	padding-top: 20px;
 	position: relative;
