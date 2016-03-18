@@ -1,6 +1,16 @@
 'use strict'
 
-
+function cellContents(grid, coord){
+	if(grid[coord]){
+		if(grid[coord].requestMove){
+			return grid[coord].color;
+		} else {
+			return null;
+		}
+	} else {
+		return null;
+	}
+}
 
 function processEnPassant(grid, destination){
 	var legalEnPassantSquares = ["a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
@@ -229,9 +239,56 @@ class Rook extends Piece {
 		super(color);
 		this.moved = false;
 		this.value = 5;
+		this.possibleDestinations = [];
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){
+			return false;
+		}
+		this.buildMoveList(grid, origin);
+		if(this.possibleDestinations.indexOf(destination)>=0){
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	buildMoveList(grid, origin){
+		var list = [];
+		var cur;
+		var prev = origin;
+		var direction = ["N", "E", "S", "W"];
+		for(var a = 0; a < 4; a++){
+			for(var i = 1; i < 8 ; i++){
+				cur = getCellInDirection(prev, direction[a]);
+				if (cur === "Out Of Bounds"){
+					prev = origin;
+					break;
+				}
+				var content = cellContents(grid, cur);
+				if(content){
+					if (content === this.color){
+						prev = origin;
+						break;
+					} else {
+						list.push(cur);
+						prev = origin;
+						break;
+					}
+				} else {
+					list.push(cur);
+					prev = cur;
+				}
+			}
+		}
+		this.possibleDestinations = list;
+	}
+
+	inLineOfSight(grid, origin, target){
+		this.buildMoveList(grid, origin);
+		if (this.possibleDestinations.indexOf(target)>=0){
+			return true;
+		} else {
 			return false;
 		}
 	}
@@ -262,9 +319,56 @@ class Bishop extends Piece {
 		super(color);
 		this.moved = false;
 		this.value = 3;
+		this.possibleDestinations = [];
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){
+			return false;
+		}
+		this.buildMoveList(grid, origin);
+		if(this.possibleDestinations.indexOf(destination)>=0){
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	buildMoveList(grid, origin){
+		var list = [];
+		var cur;
+		var prev = origin;
+		var direction = ["NW", "NE", "SE", "SW"];
+		for(var a = 0; a < 4; a++){
+			for(var i = 1; i < 8 ; i++){
+				cur = getCellInDirection(prev, direction[a]);
+				if (cur === "Out Of Bounds"){
+					prev = origin;
+					break;
+				}
+				var content = cellContents(grid, cur);
+				if(content){
+					if (content === this.color){
+						prev = origin;
+						break;
+					} else {
+						list.push(cur);
+						prev = origin;
+						break;
+					}
+				} else {
+					list.push(cur);
+					prev = cur;
+				}
+			}
+		}
+		this.possibleDestinations = list;
+	}
+
+	inLineOfSight(grid, origin, target){
+		this.buildMoveList(grid, origin);
+		if (this.possibleDestinations.indexOf(target)>=0){
+			return true;
+		} else {
 			return false;
 		}
 	}
@@ -274,9 +378,56 @@ class Queen extends Piece {
 	constructor(color){
 		super(color);
 		this.value = 9;
+		this.possibleDestinations = [];
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){
+			return false;
+		}
+		this.buildMoveList(grid, origin);
+		if(this.possibleDestinations.indexOf(destination)>=0){
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	buildMoveList(grid, origin){
+		var list = [];
+		var cur;
+		var prev = origin;
+		var direction = ["W", "NW", "N", "NE", "E", "SE", "S", "SW"];
+		for(var a = 0; a < 8; a++){
+			for(var i = 1; i < 8 ; i++){
+				cur = getCellInDirection(prev, direction[a]);
+				if (cur === "Out Of Bounds"){
+					prev = origin;
+					break;
+				}
+				var content = cellContents(grid, cur);
+				if(content){
+					if (content === this.color){
+						prev = origin;
+						break;
+					} else {
+						list.push(cur);
+						prev = origin;
+						break;
+					}
+				} else {
+					list.push(cur);
+					prev = cur;
+				}
+			}
+		}
+		this.possibleDestinations = list;
+	}
+
+	inLineOfSight(grid, origin, target){
+		this.buildMoveList(grid, origin);
+		if (this.possibleDestinations.indexOf(target)>=0){
+			return true;
+		} else {
 			return false;
 		}
 	}
