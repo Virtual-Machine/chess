@@ -15,9 +15,10 @@ var positions = {
 }
 
 class ChessEngine {
-	constructor(){
+	constructor(production){
 		this.grid = {};
 		this.whiteTurn = true;
+		this.production = production
 	}
 
 	initializeGrid(){
@@ -35,7 +36,23 @@ class ChessEngine {
 	requestMove(origin, destination){
 		if(this.grid[origin]){ //Something located
 			if(this.grid[origin].requestMove){//Has ability to move
-				return this.grid[origin].requestMove(this.grid, origin, destination);
+				if((this.grid[origin].color === 'Black' && !this.whiteTurn) || (this.grid[origin].color === 'White' && this.whiteTurn)){
+					var response = this.grid[origin].requestMove(this.grid, origin, destination);
+					if (response){
+						if(this.production){
+							if (this.whiteTurn){
+								this.removePassants("Black");
+							} else {
+								this.removePassants("White");
+							}
+							this.whiteTurn = !this.whiteTurn;	
+						}
+						return true;
+					} else {
+						return false;
+					}
+				}
+				
 			} else {
 				return false;
 			}
@@ -43,11 +60,46 @@ class ChessEngine {
 			return false;
 		}
 	}
+
+	removePassants(color){
+		for(var i in this.grid){
+			if (this.grid[i] === "EnPassant" + color){
+				this.grid[i] = null;
+			}
+		}
+	}
+
+	upgradePawnCheck(){
+		var upgradeSquares = ["a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
+		"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"];
+		for(var i in upgradeSquares){
+			var check = this.grid[upgradeSquares[i]]
+			if(check instanceof Pawn){
+				this.grid[upgradeSquares[i]] = new Queen(check.color);
+				$('#' + upgradeSquares[i])[0].innerHTML = '♛';
+			}
+		}
+	}
+
+	// test helpers
+
+	flagCell(cell, color){
+		this.grid[cell] = "EnPassant" + color;
+	}
+
+	unflagCell(cell){
+		this.grid[cell] = null;
+	}
+
+	movePiece(origin, destination){
+		var tmp = this.grid[origin];
+		this.grid[destination] = tmp;
+		this.grid[origin] = null;
+	}
 }
 
-var chessEngine = new ChessEngine();
+var chessEngine = new ChessEngine(true);
 chessEngine.initializeGrid();
-chessEngine.showGrid();
 
 function idToPiece(id){
 	if(id == null){
@@ -166,5 +218,9 @@ function drop(ev) {
     	$('#' + origin)[0].className = 'holder';
     	$('#' + origin)[0].innerHTML = '';
     	ev.target.innerHTML = data;
+    	chessEngine.grid[destination] = chessEngine.grid[origin];
+    	chessEngine.grid[origin] = null;
+    	chessEngine.grid[destination].moved = true;
+    	chessEngine.upgradePawnCheck();
     }
 }
