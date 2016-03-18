@@ -20,6 +20,8 @@ class ChessEngine {
 		this.whiteTurn = true;
 		this.production = production
 		this.pause = false;
+		this.lastMove = null;
+
 	}
 
 	initializeGrid(){
@@ -53,6 +55,8 @@ class ChessEngine {
 							}
 							this.whiteTurn = !this.whiteTurn;	
 						}
+
+						
 						return true;
 					} else {
 						return false;
@@ -73,6 +77,18 @@ class ChessEngine {
 				this.grid[i] = null;
 			}
 		}
+	}
+
+	changeHighlighting(origin, destination){
+		if(this.lastMove){
+			var lastOrigin = this.lastMove[0];
+			var lastDestination = this.lastMove[1];
+			$("#" + lastOrigin).removeClass('glow');
+			$("#" + lastDestination).removeClass('glow');
+		}
+		this.lastMove = [origin, destination];
+		$("#" + origin).addClass('glow');
+		$("#" + destination).addClass('glow');
 	}
 
 	upgradePawnCheck(){
@@ -254,6 +270,9 @@ function drop(ev) {
     	chessEngine.grid[destination].moved = true;
     	chessEngine.upgradePawnCheck();
     	chessEngine.updatePoints();
+    	if(chessEngine.production){
+    		chessEngine.changeHighlighting(origin, destination);
+    	}
     }
 }
 
