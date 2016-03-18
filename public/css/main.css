@@ -109,6 +109,11 @@ html, body {
 }
 
 .glow {
-	background-color: #99B561;
+	background-color: rgba(153,181,97,.5);
+	}
+
+
+
+
 }
 
