@@ -13,7 +13,15 @@
 			<div id="board">
 			</div>
 		</div>
-		<div id="pieceSelect"></div>
+		<div id="pieceWindow">
+			<label for="piece">Select Piece</label><select name="piece" id="pieceSelect">
+				<option value="Knight">Knight</option>
+				<option value="Bishop">Bishop</option>
+				<option value="Rook">Rook</option>
+				<option value="Queen">Queen</option>
+			</select>
+			<div class="button" onclick="submitValue()">OK</div>
+		</div>
 		<script type="text/javascript" src="public/js/pieces.js"></script>
 		<script type="text/javascript" src="public/js/main.js"></script>
 		<script type="text/javascript" src="public/js/assert.js"></script> 

@@ -19,6 +19,7 @@ class ChessEngine {
 		this.grid = {};
 		this.whiteTurn = true;
 		this.production = production
+		this.pause = false;
 	}
 
 	initializeGrid(){
@@ -34,7 +35,7 @@ class ChessEngine {
 	}
 
 	requestMove(origin, destination){
-		if(this.grid[origin]){ //Something located
+		if(this.grid[origin] && !this.pause){ //Something located
 			if(this.grid[origin].requestMove){//Has ability to move
 				if((this.grid[origin].color === 'Black' && !this.whiteTurn) || (this.grid[origin].color === 'White' && this.whiteTurn)){
 					var response = this.grid[origin].requestMove(this.grid, origin, destination);
@@ -70,15 +71,19 @@ class ChessEngine {
 	}
 
 	upgradePawnCheck(){
+		this.pause = true;
 		var upgradeSquares = ["a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
 		"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"];
 		for(var i in upgradeSquares){
 			var check = this.grid[upgradeSquares[i]]
 			if(check instanceof Pawn){
-				this.grid[upgradeSquares[i]] = new Queen(check.color);
-				$('#' + upgradeSquares[i])[0].innerHTML = '♛';
+				$('#pieceWindow').css('visibility', 'visible');
+				$('#pieceWindow').data('coords', upgradeSquares[i])
+				$('#pieceWindow').data('color', check.color)
+				return;
 			}
 		}
+		this.pause = false;
 	}
 
 	// test helpers
@@ -223,4 +228,30 @@ function drop(ev) {
     	chessEngine.grid[destination].moved = true;
     	chessEngine.upgradePawnCheck();
     }
+}
+
+function submitValue(){
+	$('#pieceWindow').css('visibility', 'hidden');
+	var selection = $('#pieceSelect').val();
+	var coords = $('#pieceWindow').data('coords');
+	var color = $('#pieceWindow').data('color');
+	switch(selection){
+		case 'Knight':
+			$('#' + coords)[0].innerHTML = "♞"
+			chessEngine.grid[coords] = new Knight(color);
+			break;
+		case 'Bishop':
+			$('#' + coords)[0].innerHTML = "♝"
+			chessEngine.grid[coords] = new Bishop(color);
+			break;
+		case 'Rook':
+			$('#' + coords)[0].innerHTML = "♜"
+			chessEngine.grid[coords] = new Rook(color);
+			break;
+		case 'Queen':
+			$('#' + coords)[0].innerHTML = "♛"
+			chessEngine.grid[coords] = new Queen(color);
+			break;
+	}
+	chessEngine.pause = false;
 }
