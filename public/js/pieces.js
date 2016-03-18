@@ -156,6 +156,7 @@ class Pawn extends Piece {
 			this.possibleMoves = ["0,-1","0,-2","-1,-1","1,-1"]
 		}
 		this.moved = false;
+		this.value = 1;
 	}
 
 	requestMove(grid, origin, destination){
@@ -227,6 +228,7 @@ class Rook extends Piece {
 	constructor(color){
 		super(color);
 		this.moved = false;
+		this.value = 5;
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){
@@ -238,9 +240,18 @@ class Rook extends Piece {
 class Knight extends Piece {
 	constructor(color){
 		super(color);
+		this.possibleMoves = ["2,1", "1,2", "2,-1", "-1,2", "-2,1", "1,-2", "-2,-1", "-1,-2"];
+		this.value = 3;
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){
+			return false;
+		}
+		var movement = getMovementShape(origin, destination);
+		var index = this.possibleMoves.indexOf(movement.toString());
+		if(index >= 0 && index < 8){
+			return true;
+		} else {
 			return false;
 		}
 	}
@@ -250,6 +261,7 @@ class Bishop extends Piece {
 	constructor(color){
 		super(color);
 		this.moved = false;
+		this.value = 3;
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){
@@ -261,6 +273,7 @@ class Bishop extends Piece {
 class Queen extends Piece {
 	constructor(color){
 		super(color);
+		this.value = 9;
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){
@@ -274,6 +287,7 @@ class King extends Piece {
 		super(color);
 		this.moved = false;
 		this.checked = false;
+		this.value = 0;
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){

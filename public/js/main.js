@@ -28,6 +28,7 @@ class ChessEngine {
 				this.grid[mapToLetter(a) + b] = idToPiece(positions[mapToLetter(a) + b]);
 			}
 		}
+		this.updatePoints();
 	}
 
 	showGrid(){
@@ -84,6 +85,25 @@ class ChessEngine {
 			}
 		}
 		this.pause = false;
+	}
+
+	updatePoints(){
+		var blackPoints = 0;
+		var whitePoints = 0;
+		for(var i in this.grid){
+			if(this.grid[i]){
+				if(this.grid[i].color){
+					if(this.grid[i].color == "Black"){
+						blackPoints += this.grid[i].value;
+					}
+					if(this.grid[i].color == "White"){
+						whitePoints += this.grid[i].value;
+					}
+				}
+			}
+		}
+		$('#bPieceValue')[0].innerHTML = blackPoints;
+		$('#wPieceValue')[0].innerHTML = whitePoints;
 	}
 
 	// test helpers
@@ -227,6 +247,7 @@ function drop(ev) {
     	chessEngine.grid[origin] = null;
     	chessEngine.grid[destination].moved = true;
     	chessEngine.upgradePawnCheck();
+    	chessEngine.updatePoints();
     }
 }
 

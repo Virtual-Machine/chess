@@ -4,13 +4,29 @@
   		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
   		<title> - Project - </title>
 		<script type="text/javascript" src="public/js/jquery.js"></script>
-		<script type="text/javascript" src="public/js/bootstrap.js"></script>   
-		<link rel="stylesheet" type="text/css" href="public/css/bootstrap.css">
 		<link rel="stylesheet" type="text/css" href="public/css/main.css">
 	</head>
 	<body>
 		<div class="container">
 			<div id="board">
+			</div>
+			<div id="sidePanel">
+			<div class="playerBlack">
+				<div>Black</div>
+				<br>
+				<label for="bName">Name: </label><input id='bName' type="text">
+				<br>
+				<br>
+				<label for="bName">Piece Value: </label><span id="bPieceValue"></span>
+			</div>
+			<div class="playerWhite">
+				<div>White</div>
+				<br>
+				<label for="wName">Name: </label><input id='wName' type="text">
+				<br>
+				<br>
+				<label for="wName">Piece Value: </label><span id="wPieceValue"></span>
+			</div>
 			</div>
 		</div>
 		<div id="pieceWindow">
