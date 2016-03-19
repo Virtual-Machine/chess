@@ -21,7 +21,7 @@ class ChessEngine {
 		this.production = production
 		this.pause = false;
 		this.lastMove = null;
-
+		this.check = false;
 	}
 
 	initializeGrid(){
@@ -39,6 +39,16 @@ class ChessEngine {
 
 	requestMove(origin, destination){
 		if(this.grid[origin] && !this.pause){ //Something located
+			var piece1 = this.grid[origin]
+			var piece2 = this.grid[destination]
+			this.grid[origin] = null;
+			this.grid[destination] = piece1;
+			var check = this.searchForCheck();
+			this.grid[origin] = piece1;
+			this.grid[destination] = piece2;
+			if ((check[0] === true && check[3] === piece1.color) || check[3] === "Illegal"){
+				return false;
+			}
 			if(this.grid[origin].requestMove){//Has ability to move
 				if((this.grid[origin].color === 'Black' && !this.whiteTurn) || (this.grid[origin].color === 'White' && this.whiteTurn)){
 					var response = this.grid[origin].requestMove(this.grid, origin, destination);
@@ -55,14 +65,11 @@ class ChessEngine {
 							}
 							this.whiteTurn = !this.whiteTurn;	
 						}
-
-						
 						return true;
 					} else {
 						return false;
 					}
 				}
-				
 			} else {
 				return false;
 			}
@@ -126,6 +133,47 @@ class ChessEngine {
 		}
 		$('#bPieceValue')[0].innerHTML = blackPoints;
 		$('#wPieceValue')[0].innerHTML = whitePoints;
+	}
+
+	searchForCheck(){
+		var battackCoords = [];
+		var bkingCoords;
+		var wattackCoords = [];
+		var wkingCoords;
+		for(var i in this.grid){
+			if(this.grid[i]){
+				if(this.grid[i].color){
+					this.grid[i].buildMoveList(this.grid, i);
+					if(this.grid[i].color === "White"){
+						for(var a in this.grid[i].possibleDestinations){
+							wattackCoords.push(this.grid[i].possibleDestinations[a]);
+						}
+						if(this.grid[i] instanceof King){
+							wkingCoords = i;
+						}
+					} else {
+						for(var a in this.grid[i].possibleDestinations){
+							battackCoords.push(this.grid[i].possibleDestinations[a]);
+						}
+						if(this.grid[i] instanceof King){
+							bkingCoords = i;
+						}
+					}
+				}
+			}
+		}
+
+		if(wattackCoords.indexOf(bkingCoords)>=0){
+			if(battackCoords.indexOf(wkingCoords)>=0){
+				return [false, wkingCoords, bkingCoords, "Illegal"];
+			}
+			return [true, bkingCoords, wkingCoords, "Black"];
+		} 
+		if(battackCoords.indexOf(wkingCoords)>=0){
+			return [true, wkingCoords, bkingCoords, "White"];
+		}
+
+		return [false, wkingCoords, bkingCoords];
 	}
 
 	// test helpers
@@ -270,6 +318,14 @@ function drop(ev) {
     	chessEngine.grid[destination].moved = true;
     	chessEngine.upgradePawnCheck();
     	chessEngine.updatePoints();
+    	var check = chessEngine.searchForCheck();
+    	if(check[0]){
+    		$('#' + check[1]).addClass('check');
+    		$('#' + check[2]).removeClass('check');
+    	} else {
+    		$('#' + check[1]).removeClass('check');
+    		$('#' + check[2]).removeClass('check');
+    	}
     	if(chessEngine.production){
     		chessEngine.changeHighlighting(origin, destination);
     	}
@@ -298,6 +354,14 @@ function submitValue(){
 			$('#' + coords)[0].innerHTML = "♛"
 			chessEngine.grid[coords] = new Queen(color);
 			break;
+	}
+	var check = chessEngine.searchForCheck();
+	if(check[0]){
+		$('#' + check[1]).addClass('check');
+		$('#' + check[2]).removeClass('check');
+	} else {
+		$('#' + check[1]).removeClass('check');
+		$('#' + check[2]).removeClass('check');
 	}
 	chessEngine.pause = false;
 	if(chessEngine.whiteTurn){

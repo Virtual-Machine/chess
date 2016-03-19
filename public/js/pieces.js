@@ -117,21 +117,45 @@ function getCellInDirection(coord, direction){
 	var letters = ['', "a", "b", "c", "d", "e", "f", "g", "h", ''];
 	var x = coord[0];
 	var y = parseInt(coord[1]);
-	if(direction.indexOf('N') >= 0){
+	if(direction === 'N'){
 		y += 1;
 	}
-	if(direction.indexOf('S') >= 0){
+	if(direction === 'S'){
 		y -= 1;
 	}
-	if(direction.indexOf('W') >= 0){
+	if(direction === 'W'){
 		var val = letters.indexOf(x);
 		val -= 1;
 		x = letters[val];
 	}
-	if(direction.indexOf('E') >= 0){
+	if(direction === 'E'){
 		var val = letters.indexOf(x);
 		val += 1;
 		x = letters[val];
+	}
+	if(direction === 'NE'){
+		var val = letters.indexOf(x);
+		val += 1;
+		x = letters[val];
+		y += 1;
+	}
+	if(direction === 'SE'){
+		var val = letters.indexOf(x);
+		val += 1;
+		x = letters[val];
+		y -= 1;
+	}
+	if(direction === 'NW'){
+		var val = letters.indexOf(x);
+		val -= 1;
+		x = letters[val];
+		y += 1;
+	}
+	if(direction === 'SW'){
+		var val = letters.indexOf(x);
+		val -= 1;
+		x = letters[val];
+		y -= 1;
 	}
 	if( x === '' || y < 1 || y > 8){
 		return "Out Of Bounds"
@@ -165,6 +189,7 @@ class Pawn extends Piece {
 		} else {
 			this.possibleMoves = ["0,-1","0,-2","-1,-1","1,-1"]
 		}
+		this.possibleDestinations;
 		this.moved = false;
 		this.value = 1;
 	}
@@ -232,6 +257,31 @@ class Pawn extends Piece {
 			}
 		}
 	}
+
+	buildMoveList(grid, origin){
+		var list = [];
+		var cell;
+		if(this.color === "White"){
+			cell = getCellInDirection(origin, "NW");
+			if(cell !== "Out Of Bounds") {
+				list.push(cell);
+			}
+			cell = getCellInDirection(origin, "NE");
+			if(cell !== "Out Of Bounds") {
+				list.push(cell);
+			}
+		} else {
+			cell = getCellInDirection(origin, "SW");
+			if(cell !== "Out Of Bounds") {
+				list.push(cell);
+			}
+			cell = getCellInDirection(origin, "SE");
+			if(cell !== "Out Of Bounds") {
+				list.push(cell);
+			}
+		}
+		this.possibleDestinations = list;
+	}
 }
 
 class Rook extends Piece {
@@ -259,6 +309,7 @@ class Rook extends Piece {
 		var prev = origin;
 		var direction = ["N", "E", "S", "W"];
 		for(var a = 0; a < 4; a++){
+			prev = origin;
 			for(var i = 1; i < 8 ; i++){
 				cur = getCellInDirection(prev, direction[a]);
 				if (cur === "Out Of Bounds"){
@@ -283,21 +334,13 @@ class Rook extends Piece {
 		}
 		this.possibleDestinations = list;
 	}
-
-	inLineOfSight(grid, origin, target){
-		this.buildMoveList(grid, origin);
-		if (this.possibleDestinations.indexOf(target)>=0){
-			return true;
-		} else {
-			return false;
-		}
-	}
 }
 
 class Knight extends Piece {
 	constructor(color){
 		super(color);
 		this.possibleMoves = ["2,1", "1,2", "2,-1", "-1,2", "-2,1", "1,-2", "-2,-1", "-1,-2"];
+		this.possibleDestinations;
 		this.value = 3;
 	}
 	requestMove(grid, origin, destination){
@@ -311,6 +354,24 @@ class Knight extends Piece {
 		} else {
 			return false;
 		}
+	}
+	buildMoveList(grid, origin){
+		var letters = ['', "a", "b", "c", "d", "e", "f", "g", "h", ''];
+		var list = [];
+		var originx = letters.indexOf(origin[0]); 
+		var originy = parseInt(origin[1]);
+		for(var i in this.possibleMoves){
+			var deltax = parseInt(this.possibleMoves[i].split(',')[0]);
+			var deltay = parseInt(this.possibleMoves[i].split(',')[1]);
+			var newx = originx + deltax;
+			var newy = originy + deltay;
+			if (newx < 1 || newx > 8 || newy < 1 || newy > 8){
+
+			} else {
+				list.push(letters[newx] + newy)
+			}
+		}
+		this.possibleDestinations = list;
 	}
 }
 
@@ -339,6 +400,7 @@ class Bishop extends Piece {
 		var prev = origin;
 		var direction = ["NW", "NE", "SE", "SW"];
 		for(var a = 0; a < 4; a++){
+			prev = origin;
 			for(var i = 1; i < 8 ; i++){
 				cur = getCellInDirection(prev, direction[a]);
 				if (cur === "Out Of Bounds"){
@@ -362,15 +424,6 @@ class Bishop extends Piece {
 			}
 		}
 		this.possibleDestinations = list;
-	}
-
-	inLineOfSight(grid, origin, target){
-		this.buildMoveList(grid, origin);
-		if (this.possibleDestinations.indexOf(target)>=0){
-			return true;
-		} else {
-			return false;
-		}
 	}
 }
 
@@ -398,6 +451,7 @@ class Queen extends Piece {
 		var prev = origin;
 		var direction = ["W", "NW", "N", "NE", "E", "SE", "S", "SW"];
 		for(var a = 0; a < 8; a++){
+			prev = origin;
 			for(var i = 1; i < 8 ; i++){
 				cur = getCellInDirection(prev, direction[a]);
 				if (cur === "Out Of Bounds"){
@@ -422,20 +476,12 @@ class Queen extends Piece {
 		}
 		this.possibleDestinations = list;
 	}
-
-	inLineOfSight(grid, origin, target){
-		this.buildMoveList(grid, origin);
-		if (this.possibleDestinations.indexOf(target)>=0){
-			return true;
-		} else {
-			return false;
-		}
-	}
 }
 
 class King extends Piece {
 	constructor(color){
 		super(color);
+		this.possibleMoves = ['1,1','1,0','1,-1','0,-1','0,0','0,1','-1,1','-1,0','-1,-1'];
 		this.moved = false;
 		this.checked = false;
 		this.value = 0;
@@ -444,5 +490,15 @@ class King extends Piece {
 		if (!super.requestMove(grid, origin, destination)){
 			return false;
 		}
+		var movement = getMovementShape(origin, destination);
+		var index = this.possibleMoves.indexOf(movement.toString());
+		if(index >= 0 && index < 8){
+			return true;
+		} else {
+			return false;
+		}
+	}
+	buildMoveList(grid, origin){
+		return;
 	}
 }
