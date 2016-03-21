@@ -1,5 +1,9 @@
 'use strict'
 
+function explain(text){
+	console.log("Rejected: " + text);
+}
+
 function cellContents(grid, coord){
 	if(grid[coord]){
 		if(grid[coord].requestMove){
@@ -168,11 +172,13 @@ function getCellInDirection(coord, direction){
 class Piece {
 	constructor(color){
 		this.color = color
+		this.moved = false;
 	}
 	requestMove(grid, origin, destination){
 		if(grid[destination]){//If there is something at destination.
 			if (grid[destination].requestMove){ //If it is a piece
 				if (grid[destination].color == this.color){ //If it is a teammate
+					explain("Trying to land on teammate")
 					return false;
 				}
 			}	
@@ -190,8 +196,8 @@ class Pawn extends Piece {
 			this.possibleMoves = ["0,-1","0,-2","-1,-1","1,-1"]
 		}
 		this.possibleDestinations;
-		this.moved = false;
 		this.value = 1;
+		this.symbol = 'P';
 	}
 
 	requestMove(grid, origin, destination){
@@ -287,9 +293,9 @@ class Pawn extends Piece {
 class Rook extends Piece {
 	constructor(color){
 		super(color);
-		this.moved = false;
 		this.value = 5;
 		this.possibleDestinations = [];
+		this.symbol = 'R';
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){
@@ -342,6 +348,7 @@ class Knight extends Piece {
 		this.possibleMoves = ["2,1", "1,2", "2,-1", "-1,2", "-2,1", "1,-2", "-2,-1", "-1,-2"];
 		this.possibleDestinations;
 		this.value = 3;
+		this.symbol = 'N';
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){
@@ -378,9 +385,9 @@ class Knight extends Piece {
 class Bishop extends Piece {
 	constructor(color){
 		super(color);
-		this.moved = false;
 		this.value = 3;
 		this.possibleDestinations = [];
+		this.symbol = 'B';
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){
@@ -432,6 +439,7 @@ class Queen extends Piece {
 		super(color);
 		this.value = 9;
 		this.possibleDestinations = [];
+		this.symbol = 'Q';
 	}
 	requestMove(grid, origin, destination){
 		if (!super.requestMove(grid, origin, destination)){
@@ -481,12 +489,12 @@ class Queen extends Piece {
 class King extends Piece {
 	constructor(color){
 		super(color);
-		this.possibleMoves = ['1,1','1,0','1,-1','0,-1','0,0','0,1','-1,1','-1,0','-1,-1'];
-		this.moved = false;
-		this.checked = false;
+		this.possibleMoves = ['1,1','1,0','1,-1','0,-1','0,1','-1,1','-1,0','-1,-1','2,0','-2,0'];
 		this.value = 0;
+		this.symbol = 'K';
+		this.checked = false;
 	}
-	requestMove(grid, origin, destination){
+	requestMove(grid, origin, destination, production){
 		if (!super.requestMove(grid, origin, destination)){
 			return false;
 		}
@@ -494,7 +502,93 @@ class King extends Piece {
 		var index = this.possibleMoves.indexOf(movement.toString());
 		if(index >= 0 && index < 8){
 			return true;
+		} else if (index >= 8){
+			if(this.checked){
+				explain("Trying to castle a king that is in check")
+				return false;
+			}
+			if(this.moved){
+				explain("Trying to castle a king that has been moved")
+				return false;
+			} else {
+				if (index == 8){
+					if(cellContents(grid, 'f' + destination[1])){
+						explain("Pieces in the way of castling move")
+						return false;
+					}
+					if(cellContents(grid, 'g' + destination[1])){
+						explain("Pieces in the way of castling move")
+						return false;
+					}
+					// if(!chessEngine.requestMove(origin, 'f' + destination[1])){
+					// 	explain("Trying to castle a king through a check")
+					// 	return false;
+					// }
+				}
+				if (index == 9){
+					if(cellContents(grid, 'b' + destination[1])){
+						explain("Pieces in the way of castling move")
+						return false;
+					}
+					if(cellContents(grid, 'c' + destination[1])){
+						explain("Pieces in the way of castling move")
+						return false;
+					}
+					if(cellContents(grid, 'd' + destination[1])){
+						explain("Pieces in the way of castling move")
+						return false;
+					}
+					// if(!chessEngine.requestMove(origin, 'd' + destination[1])){
+					// 	explain("Trying to castle a king through a check")
+					// 	return false;
+					// }
+				}
+				// check for 4 possible castling moves
+				var index2 = ['c1', 'c8', 'g1', 'g8'].indexOf(destination);
+				var rook;
+				if(index2 >=0){
+					if (index2 < 2){
+						rook = grid["a" + destination[1]];
+					} else {
+						rook = grid["h" + destination[1]];
+					}
+					if(rook){
+						if(rook.moved){
+							explain("Trying to castle with a rook that has been moved")
+							return false;
+						} else {
+							//move rook to facilitate castling
+							if(production){
+								if(index === 9){
+									rook.moved = true;
+									grid['f' + destination[1]] = rook;
+									$('#f' + destination[1])[0].innerHTML = "♜"
+									$('#f' + destination[1]).addClass(rook.color.toLowerCase());
+									grid['h' + destination[1]] = null;
+									$('#h' + destination[1])[0].innerHTML = ""
+								}
+								if(index === 10){
+									rook.moved = true;
+									grid['d' + destination[1]] = rook;
+									$('#d' + destination[1])[0].innerHTML = "♜"
+									$('#d' + destination[1]).addClass(rook.color.toLowerCase());
+									grid['a' + destination[1]] = null;
+									$('#a' + destination[1])[0].innerHTML = ""
+								}
+							}
+							return true;
+						}
+					} else {
+						explain("No rook present")
+						return false;
+					}
+				} else {
+					explain("Not a valid castling square")
+					return false;
+				}
+			}
 		} else {
+			explain("Not a valid move")
 			return false;
 		}
 	}

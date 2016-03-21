@@ -25,8 +25,8 @@ class ChessEngine {
 	}
 
 	initializeGrid(){
-		for(var a = 1; a < 9; a++){
-			for(var b = 1; b < 9; b++){
+		for(var b = 1; b < 9; b++){
+			for(var a = 1; a < 9; a++){
 				this.grid[mapToLetter(a) + b] = idToPiece(positions[mapToLetter(a) + b]);
 			}
 		}
@@ -34,7 +34,31 @@ class ChessEngine {
 	}
 
 	showGrid(){
-		console.log(this.grid)
+		var counter = 0;
+		var counter2 = 0;
+		var string = "";
+		var line = "";
+		for(var i in this.grid){
+			line += "|"
+			if(this.grid[i]){
+				if(this.grid[i].symbol){
+					line += this.grid[i].color[0] + this.grid[i].symbol;
+				} else {
+					line += "  ";
+				}
+			} else {
+				line += "  ";
+			}
+			counter++;
+			if (counter == 8){
+				counter = 0;
+				line += "|\n"
+				string =  ++counter2 + " " + line + "---------------------------\n" + string
+				line = "";
+			}
+		}
+		string += "----A--B--C--D--E--F--G--H-"
+		console.log(string);
 	}
 
 	requestMove(origin, destination){
@@ -47,11 +71,13 @@ class ChessEngine {
 			this.grid[origin] = piece1;
 			this.grid[destination] = piece2;
 			if ((check[0] === true && check[3] === piece1.color) || check[3] === "Illegal"){
+				explain("This moves you into check")
 				return false;
 			}
+			this.searchForCheck();
 			if(this.grid[origin].requestMove){//Has ability to move
-				if((this.grid[origin].color === 'Black' && !this.whiteTurn) || (this.grid[origin].color === 'White' && this.whiteTurn)){
-					var response = this.grid[origin].requestMove(this.grid, origin, destination);
+				if((this.grid[origin].color === 'Black' && !this.whiteTurn) || (this.grid[origin].color === 'White' && this.whiteTurn) || !this.production){
+					var response = this.grid[origin].requestMove(this.grid, origin, destination, this.production);
 					if (response){
 						if(this.production){
 							if (this.whiteTurn){
@@ -63,17 +89,22 @@ class ChessEngine {
 								$('#bYourTurn').css("visibility", "hidden");
 								this.removePassants("White");
 							}
-							this.whiteTurn = !this.whiteTurn;	
+							// this.whiteTurn = !this.whiteTurn;	
 						}
 						return true;
 					} else {
+						explain("Move rejected inside class")
 						return false;
 					}
+				} else {
+					return false;
 				}
 			} else {
+				explain("Trying to move nothing")
 				return false;
 			}
 		} else {
+			explain("Game is paused or you tried to move an en passant flag")
 			return false;
 		}
 	}
@@ -162,17 +193,28 @@ class ChessEngine {
 				}
 			}
 		}
-
+		var whiteKing = this.grid[wkingCoords];
+		var blackKing = this.grid[bkingCoords];
 		if(wattackCoords.indexOf(bkingCoords)>=0){
 			if(battackCoords.indexOf(wkingCoords)>=0){
 				return [false, wkingCoords, bkingCoords, "Illegal"];
 			}
+			this.check = "Black";
+			blackKing.checked = true;
+			this.grid[bkingCoords] = blackKing;
 			return [true, bkingCoords, wkingCoords, "Black"];
-		} 
+		}
 		if(battackCoords.indexOf(wkingCoords)>=0){
+			this.check = "White";
+			whiteKing.checked = true;
+			this.grid[wkingCoords] = whiteKing;
 			return [true, wkingCoords, bkingCoords, "White"];
 		}
-
+		this.check = false;
+		blackKing.checked = false;
+		this.grid[bkingCoords] = blackKing;
+		whiteKing.checked = false;
+		this.grid[wkingCoords] = whiteKing;
 		return [false, wkingCoords, bkingCoords];
 	}
 
@@ -190,6 +232,7 @@ class ChessEngine {
 		var tmp = this.grid[origin];
 		this.grid[destination] = tmp;
 		this.grid[origin] = null;
+		this.searchForCheck();
 	}
 }
 
@@ -315,9 +358,9 @@ function drop(ev) {
     	ev.target.innerHTML = data;
     	chessEngine.grid[destination] = chessEngine.grid[origin];
     	chessEngine.grid[origin] = null;
-    	chessEngine.grid[destination].moved = true;
     	chessEngine.upgradePawnCheck();
     	chessEngine.updatePoints();
+    	chessEngine.grid[destination].moved = true;
     	var check = chessEngine.searchForCheck();
     	if(check[0]){
     		$('#' + check[1]).addClass('check');
