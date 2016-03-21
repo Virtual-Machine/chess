@@ -225,10 +225,12 @@ class Pawn extends Piece {
 		var movement = getMovementShape(origin, destination);
 		var index = this.possibleMoves.indexOf(movement.toString());
 		if (index < 0){
+			explain("Invalid movement pattern for pawn")
 			return false;
 		}
 		if (index === 0){
 			if(enemyInCell){
+				explain("Pawns cannot capture directly forward")
 				return false;
 			} else {
 				return true;
@@ -242,19 +244,23 @@ class Pawn extends Piece {
 				processEnPassant(grid, destination);
 				return true;
 			} else {
+				explain("Pawns only move diagonally when capturing")
 				return false;
 			}
 		}
 		if(index === 1){
 			if (this.moved){
+				explain("Pawns can only move 2 squares forward as thier first move")
 				return false;
 			}
 			if (enemyInCell){
+				explain("Pawns cannot capture directly forward")
 				return false;
 			}
 			var cells = cellsBetween(grid, origin, destination);
 			if (cells){
 				if (objectInCells(grid, cells)){
+					explain("Pawns cannot jump over pieces")
 					return false;
 				} else {
 					grid[cells[0]] = "EnPassant" + this.color;
@@ -305,6 +311,7 @@ class Rook extends Piece {
 		if(this.possibleDestinations.indexOf(destination)>=0){
 			return true;
 		} else {
+			explain("Invalid movement pattern for rook")
 			return false;
 		}
 	}
@@ -359,6 +366,7 @@ class Knight extends Piece {
 		if(index >= 0 && index < 8){
 			return true;
 		} else {
+			explain("Invalid movement pattern for knight")
 			return false;
 		}
 	}
@@ -397,6 +405,7 @@ class Bishop extends Piece {
 		if(this.possibleDestinations.indexOf(destination)>=0){
 			return true;
 		} else {
+			explain("Invalid movement pattern for bishop")
 			return false;
 		}
 	}
@@ -449,6 +458,7 @@ class Queen extends Piece {
 		if(this.possibleDestinations.indexOf(destination)>=0){
 			return true;
 		} else {
+			explain("Invalid movement pattern for queen")
 			return false;
 		}
 	}
@@ -520,10 +530,18 @@ class King extends Piece {
 						explain("Pieces in the way of castling move")
 						return false;
 					}
-					// if(!chessEngine.requestMove(origin, 'f' + destination[1])){
-					// 	explain("Trying to castle a king through a check")
-					// 	return false;
-					// }
+					if(production){
+						if(!chessEngine.requestMove(origin, 'f' + destination[1])){
+							explain("Trying to castle a king through a check")
+							return false;
+						}
+					}
+					if(!production){
+						if(!chessEngineTest.requestMove(origin, 'f' + destination[1])){
+							explain("Trying to castle a king through a check")
+							return false;
+						}
+					}
 				}
 				if (index == 9){
 					if(cellContents(grid, 'b' + destination[1])){
@@ -538,10 +556,18 @@ class King extends Piece {
 						explain("Pieces in the way of castling move")
 						return false;
 					}
-					// if(!chessEngine.requestMove(origin, 'd' + destination[1])){
-					// 	explain("Trying to castle a king through a check")
-					// 	return false;
-					// }
+					if(production){
+						if(!chessEngine.requestMove(origin, 'd' + destination[1])){
+							explain("Trying to castle a king through a check")
+							return false;
+						}
+					}
+					if(!production){
+						if(!chessEngineTest.requestMove(origin, 'd' + destination[1])){
+							explain("Trying to castle a king through a check")
+							return false;
+						}
+					}
 				}
 				// check for 4 possible castling moves
 				var index2 = ['c1', 'c8', 'g1', 'g8'].indexOf(destination);
@@ -588,7 +614,7 @@ class King extends Piece {
 				}
 			}
 		} else {
-			explain("Not a valid move")
+			explain("Invalid movement pattern for king")
 			return false;
 		}
 	}

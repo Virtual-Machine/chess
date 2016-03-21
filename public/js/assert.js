@@ -107,8 +107,14 @@ moveShouldPass(move21, gen.next().value);
 moveShouldFail(move22, gen.next().value);
 
 //4. The king does not pass through a square that is attacked by an enemy piece.
-//5. The king does not end up in check. (True of any legal move.)
+chessEngineTest.movePiece("g2", "h2")
+var move23 = chessEngineTest.requestMove("e1", "g1");
+moveShouldFail(move23, gen.next().value);
 
+//5. The king does not end up in check. (True of any legal move.)
+chessEngineTest.movePiece("h2", "h3")
+var move24 = chessEngineTest.requestMove("e1", "g1");
+moveShouldFail(move24, gen.next().value);
 
 
 

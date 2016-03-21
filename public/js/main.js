@@ -93,7 +93,6 @@ class ChessEngine {
 						}
 						return true;
 					} else {
-						explain("Move rejected inside class")
 						return false;
 					}
 				} else {
