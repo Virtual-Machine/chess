@@ -68,4 +68,8 @@ class King extends Piece {
 			}
 		}
 	}
+
+	canSeeKing(origin, coord){
+		return false;
+	}
 }

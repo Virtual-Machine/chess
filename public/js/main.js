@@ -18,6 +18,9 @@ class ChessEngine {
 	constructor(){
 		this.grid = {};
 		this.turn = "White";
+		this.waiting = "Black";
+		this.blackKing = "e8";
+		this.whiteKing = "e1";
 		this.pause = false;
 		this.check = false;
 		this.lastMove = null;
@@ -64,43 +67,6 @@ class ChessEngine {
 		console.log(string);
 	}
 
-	calculateLegalMoves(color, analyze){
-		this.legalMoves[color] = [];
-		for(var i in this.grid){
-			if(this.grid[i].content){
-				var piece = this.grid[i].content;
-				if(piece.color === color){
-					piece.calculateLegalMoves(i, analyze);
-					if(color === "Black" && piece instanceof King){
-					}
-					for(var k in piece.legalMoves){
-						if(analyze){
-							if(this.analyzeMoveForLegality(piece.legalMoves[k])){
-								if(color === "Black" && piece instanceof King){
-								}
-								this.legalMoves[color].push(piece.legalMoves[k]);
-							} else {
-								if(color === "Black" && piece instanceof King){
-								}
-							}
-						} else {
-							this.legalMoves[color].push(piece.legalMoves[k]);
-						}
-					}
-				}
-			}
-		}
-		if(analyze){
-			console.log(this.legalMoves[color])
-			if(this.legalMoves[color] === []){
-				if(this.check === color){
-					checkmate(color);
-				} else {
-					stalemate();
-				}
-			}
-		}
-	}
 
 	requestMove(origin, destination){
 		if(this.pause){
@@ -112,7 +78,7 @@ class ChessEngine {
 			}
 		}
 		if(this.legalMoves[this.turn].indexOf(origin + "," + destination) >=0){
-			return true
+			return true;
 		} else {
 			return false;
 		}
@@ -173,82 +139,94 @@ class ChessEngine {
 		$('#wPieceValue')[0].innerHTML = whitePoints;
 	}
 
-	checkCoordForDanger(color, coord){
-		var target;
-		for (var i in this.legalMoves[color]){
-			target = this.legalMoves[color][i].split(',')[1]
-			if(target === coord){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	searchForCheck(){
-		// var wKing;
-		// var wKingCoords;
-		// var bKing;
-		// var bKingCoords;
-		// var wAttackCoords = [];
-		// var bAttackCoords = [];
-		// for(var i in this.grid){
-		// 	if (this.grid[i].content){
-		// 		var content = this.grid[i].content
-		// 		if(content.color === "White"){
-		// 			if(content instanceof King){
-		// 				wKing = content;
-		// 				wKingCoords = i;
-		// 			} else {
-		// 				wAttackCoords.push(this.)
-		// 			}
-		// 		} else {
-		// 			if(content instanceof King){
-		// 				bKing = content;
-		// 				bKingCoords = i;
-		// 			} else {
-
-		// 			}
-		// 		}
-		// 	}
-		// }
-	}
-
-	analyzeMoveForLegality(move){
-		var ok = true;
-		var opponent;
-		if(this.turn === 'White'){
-			opponent = 'Black';
-		} else {
-			opponent = 'White';
-		}
-		var kingCoord;
-		var content;
-		for(var k in this.grid){
-			if(this.grid[k].content){
-				content = this.grid[k].content
-				if (content instanceof King){
-					if (content.color === this.turn){
-						kingCoord = k;
-						break;
+	calculateLegalMoves(color){
+		this.legalMoves[color] = [];
+		for(var i in this.grid){
+			if(this.grid[i].content){
+				var piece = this.grid[i].content;
+				if(piece.color === color){
+					piece.calculateLegalMoves(i);
+					for(var k in piece.legalMoves){
+						if(this.analyzeMoveForLegality(piece.legalMoves[k])){
+							this.legalMoves[color].push(piece.legalMoves[k]);
+						}
 					}
 				}
 			}
 		}
+		
+		if(this.legalMoves[color].length === 0){
+			this.searchForCheck()
+			if(this.check === color){
+				checkmate(color);
+			} else {
+				stalemate();
+			}
+		}
+		console.log(this.legalMoves[color])
+	}
+
+	searchForCheck(){
+		var checkFound = false;
+		var kingCoords;
+		if(this.turn === "Black"){
+			kingCoords = this.blackKing;
+		} else {
+			kingCoords = this.whiteKing;
+		}
+		
+		for(var i in this.grid){
+			if(this.grid[i].content){
+				if(this.grid[i].content.color === this.waiting){
+					if(this.grid[i].content.canSeeKing(i, kingCoords)){
+						checkFound = true;
+					}
+				}
+			}
+		}
+		if(this.turn === "Black" && checkFound){
+			$('#' + this.blackKing).addClass("check");
+			$('#' + this.whiteKing).removeClass("check");
+			this.check = "Black";
+			return;
+		}
+		if(this.turn === "White" && checkFound){
+			$('#' + this.whiteKing).addClass("check");
+			$('#' + this.blackKing).removeClass("check");
+			this.check = "White";
+			return;
+		}
+		$('#' + this.whiteKing).removeClass("check");
+		$('#' + this.blackKing).removeClass("check");
+		this.check = false;
+	}
+
+	analyzeMoveForLegality(move){
+		var ok = true;
 		var origin = move.split(',')[0];
 		var destination = move.split(',')[1];
 		var holdOrigin = this.grid[origin].content;
-		if(holdOrigin instanceof King){
-			kingCoord = destination;
-		}
 		var holdDestination = this.grid[destination].content;
+		if(holdOrigin instanceof King && holdOrigin.color === this.turn){
+			if(this.turn === 'White'){
+				this.whiteKing = destination;
+			} else {
+				this.blackKing = destination;
+			}
+		}
 		this.grid[origin].content = null;
 		this.grid[destination].content = holdOrigin;
-		this.calculateLegalMoves(opponent, false);
-		for(var i in this.legalMoves[opponent]){
-			var enemyDestination = this.legalMoves[opponent][i].split(',')[1];
-			if(enemyDestination === kingCoord){
-				ok = false;
-				break;
+
+		if(this.turn === 'White'){
+			ok = !this.isKingInSight(this.grid, this.whiteKing)
+		} else {
+			ok = !this.isKingInSight(this.grid, this.blackKing)
+		}
+		if(holdOrigin instanceof King && holdOrigin.color === this.turn){
+			if(this.turn === 'White'){
+				this.whiteKing = origin;
+			} else {
+				this.blackKing = origin;
 			}
 		}
 		this.grid[origin].content = holdOrigin;
@@ -256,20 +234,47 @@ class ChessEngine {
 		return ok;
 	}
 
+	isKingInSight(grid, coord){
+		var seen = false;
+		for(var i in grid){
+			if(grid[i].content){
+				if(grid[i].content.color === this.waiting){
+					if(grid[i].content.canSeeKing(i, coord)){
+						seen = true;
+					}
+				}
+			}
+		}
+		return seen;
+	}
+
 	turnOver(origin, destination){
-		this.grid[destination].content = this.grid[origin].content;
-		this.grid[origin].content = null;
+		if(this.grid[origin].content instanceof King){
+			if(this.turn === "White"){
+				this.whiteKing = destination;
+			} else {
+				this.blackKing = destination;
+			}
+		}
+		this.grid[origin].content.makeMove(origin, destination);
 		this.upgradePawnCheck();
 		this.updatePoints();
 		this.grid[destination].content.moved = true;
-
 		this.changeHighlighting(origin, destination);
 		if(this.turn === 'White'){
 			this.turn = 'Black';
+			this.waiting = 'White';
+			$('#wYourTurn').css("visibility", "hidden");
+			$('#bYourTurn').css("visibility", "visible");
 		} else {
 			this.turn = 'White';
+			this.waiting = 'Black';
+			$('#wYourTurn').css("visibility", "visible");
+			$('#bYourTurn').css("visibility", "hidden");
 		}
-		this.calculateLegalMoves(this.turn, true);
+		this.removePassants(this.turn);
+		this.searchForCheck();
+		this.calculateLegalMoves(this.turn)
 	}
 }
 

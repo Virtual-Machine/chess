@@ -87,25 +87,6 @@ function explain(text){
 	// console.log("Rejected: " + text);
 }
 
-
-
-function processEnPassant(grid, destination){
-	var legalEnPassantSquares = ["a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
-	"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6"]
-	var index = legalEnPassantSquares.indexOf(destination);
-	if(index >= 0 && index < 8){
-		destination = destination[0] + 4;
-		grid[destination] = null;
-		$('#' + destination)[0].className = 'holder';
-		$('#' + destination)[0].innerHTML = '';
-	} else if(index >= 8 && index < 16){
-		destination = destination[0] + 5;
-		grid[destination] = null;
-		$('#' + destination)[0].className = 'holder';
-		$('#' + destination)[0].innerHTML = '';
-	}
-}
-
 function objectInCells(grid, cells){
 	for(var i in cells){
 		if(grid[cells[i]].content){
@@ -264,14 +245,8 @@ function submitValue(){
 			chessEngine.grid[coords].content = new Queen(color);
 			break;
 	}
-	var check = chessEngine.searchForCheck();
-	if(check[0]){
-		$('#' + check[1]).addClass('check');
-		$('#' + check[2]).removeClass('check');
-	} else {
-		$('#' + check[1]).removeClass('check');
-		$('#' + check[2]).removeClass('check');
-	}
+	chessEngine.searchForCheck();
+	chessEngine.calculateLegalMoves(chessEngine.turn);
 	chessEngine.pause = false;
 	if(chessEngine.whiteTurn){
 		$('#wYourTurn').css("visibility", "visible");
@@ -289,12 +264,12 @@ function checkmate(color){
 	}
 	$('#wYourTurn').css("visibility", "hidden");
 	$('#bYourTurn').css("visibility", "hidden");
-	$('#gameBanner').innerHTML = "Checkmate: " + opponent + " wins."
+	$('#gameBanner')[0].innerHTML = "Checkmate: " + opponent + " wins."
 }
 
 
 function stalemate(){
 	$('#wYourTurn').css("visibility", "hidden");
 	$('#bYourTurn').css("visibility", "hidden");
-	$('#gameBanner').innerHTML = "Stalemate: Its a draw."
+	$('#gameBanner')[0].innerHTML = "Stalemate: Its a draw."
 }

@@ -37,4 +37,14 @@ class Knight extends Piece {
 			}
 		}
 	}
+	canSeeKing(origin, coord){
+		this.calculateLegalMoves(origin);
+		for(var i in this.legalMoves){
+			var destination = this.legalMoves[i].split(',')[1];
+			if(destination === coord){
+				return true;
+			}
+		}
+		return false;
+	}
 }
