@@ -9,14 +9,12 @@ Pawns can capture via a 1 square forward diagonal move.
 Pawns can capture via En Passant.
 When a Pawn reaches the end of the board, it can be promoted to Bishop, Knight, Rook or Queen at the player's discretion.
 Standard Rook, Bishop, Knight, Queen, and King Movement.
-Castling
+Checkmate
+Stalemate
 Check
 
 Not Yet Implemented:
-
-Tests for rules 4 and 5 of castling
-Checkmate
-Stalemate
+Castling
 50 Move Rule
 Impossibility of Checkmate
 Mutual Draws
