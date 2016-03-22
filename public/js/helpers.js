@@ -273,3 +273,47 @@ function stalemate(){
 	$('#bYourTurn').css("visibility", "hidden");
 	$('#gameBanner')[0].innerHTML = "Stalemate: Its a draw."
 }
+
+function hideThemePicker(){
+	$('#themePicker').css("visibility", "hidden");
+}
+
+function changeTheme1(){
+	var stylesheet = document.styleSheets[1];
+	for(var i in stylesheet.cssRules){
+		if(stylesheet.cssRules[i].selectorText === '.black'){
+			stylesheet.cssRules[i].style.color = $('#html5colorpicker1').val()
+		}
+	}
+}
+
+function changeTheme2(){
+	var stylesheet = document.styleSheets[1];
+	for(var i in stylesheet.cssRules){
+		if(stylesheet.cssRules[i].selectorText === '.white'){
+			stylesheet.cssRules[i].style.color = $('#html5colorpicker2').val()
+		}
+	}
+}
+
+function changeTheme3(){
+	var stylesheet = document.styleSheets[1];
+	for(var i in stylesheet.cssRules){
+		if(stylesheet.cssRules[i].selectorText === '#board'){
+			stylesheet.cssRules[i].style.backgroundColor = $('#html5colorpicker3').val()
+		}
+	}
+}
+
+function changeTheme4(){
+	var stylesheet = document.styleSheets[1];
+	for(var i in stylesheet.cssRules){
+		if(stylesheet.cssRules[i].selectorText === '.light'){
+			stylesheet.cssRules[i].style.backgroundColor = $('#html5colorpicker4').val()
+		}
+	}
+}
+
+function addMove(piece, origin, destination){
+	$('.moveList').append("<p>" + piece + ": " + origin + " ~> " + destination + "</p>")
+}

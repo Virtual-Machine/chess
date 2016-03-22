@@ -1,7 +1,7 @@
 html, body {
 	height: 100%;
 	margin: 0px;
-	background-color: #777;
+	background-color: #222;
 	overflow-y: hidden;
 }
 
@@ -19,19 +19,36 @@ html, body {
 	width: 300px;
 	height: 600px;
 	padding: 0px;
-	background-color: #5ac;
+	background-color: #444;
 	text-align: center;
+}
+
+.moveListPanel{
+	position: absolute;
+	left: 940px;
+	top: 20px;
+	height: 560px;
+	width: 220px;
+	background-color: #333;
+	padding: 20px;
+	font-family: Verdana;
+}
+
+.moveList {
+	height: 500px;
+	color: #eee;
+	overflow-y: scroll;
 }
 
 .playerBlack {
 	background-color: #111;
 	color: #ddd;
-	height: 300px;
+	height: 287px;
 }
 .playerWhite {
 	background-color: #ddd;
 	color: #111;
-	height: 300px;
+	height: 287px;
 }
 
 #bYourTurn {
@@ -120,7 +137,42 @@ html, body {
 #gameBanner{
 	padding-top: 15px;
 	font-size: 24px;
-	color: #004600;
+	color: #009a00;
 	margin: 0 auto;
 	width: 90%;
+	background-color: black;
+	border-radius: 20px;
+	padding: 18px;
+}
+
+#themePicker{
+	visibility: hidden;
+	position: absolute;
+	left:0px;right:0px;top:0px;bottom:0px;
+	margin: auto;
+	width: 200px;
+	height: 300px;
+	background-color: #aaa;
+	text-align: center;
+	line-height: 20px;
+	border-radius: 20px;
+}
+
+.themeEditorButton{
+	color: #eee;
+	font-family: Verdana;
+	position: absolute;
+	background-color: #555;
+	width: 100px;
+	bottom: 0px;
+	right: 0px;
+	cursor: pointer
+}
+
+.themeEditorButton:hover{
+	background-color: #333;
+}
+
+#headerText {
+	color: #D6812D;
 }
