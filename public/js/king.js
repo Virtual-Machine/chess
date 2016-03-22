@@ -5,8 +5,28 @@ class King extends Piece {
 		this.symbol = 'K';
 	}
 	calculateLegalMoves(origin, analyze){
+		var queenSideSafe = true;
+		var kingSideSafe = true;
 		this.legalMoves = [];
 		var row = origin[1];
+		var opponent;
+		if(this.color === 'White'){
+			opponent = 'Black'
+		} else {
+			opponent = 'White'
+		}
+		for(var i in chessEngine.grid){
+			if(chessEngine.grid[i].content){
+				if(chessEngine.grid[i].content.color === opponent){
+					if(chessEngine.grid[i].content.canSeeKing(i, 'f' + row)){
+						kingSideSafe = false;
+					}
+					if(chessEngine.grid[i].content.canSeeKing(i, 'd' + row)){
+						queenSideSafe = false;
+					}
+				}
+			}
+		}
 		if(!this.moved && chessEngine.check !== this.color){
 			var cell1 = chessEngine.grid["a" + row];
 			var cell2 = chessEngine.grid["b" + row];
@@ -15,7 +35,7 @@ class King extends Piece {
 			var cell6 = chessEngine.grid["f" + row];
 			var cell7 = chessEngine.grid["g" + row];
 			var cell8 = chessEngine.grid["h" + row];
-			if(cell1.content){
+			if(cell1.content && queenSideSafe){
 				if(cell1.content instanceof Rook){
 					if(!cell1.content.moved){
 						if(cell2.isEmpty() && cell3.isEmpty() && cell4.isEmpty()){
@@ -24,7 +44,7 @@ class King extends Piece {
 					}
 				}
 			}
-			if(cell8.content){
+			if(cell8.content && kingSideSafe){
 				if(cell8.content instanceof Rook){
 					if(!cell8.content.moved){
 						if(cell6.isEmpty() && cell7.isEmpty()){
@@ -71,5 +91,29 @@ class King extends Piece {
 
 	canSeeKing(origin, coord){
 		return false;
+	}
+
+	makeMove(origin, destination){
+		var cell1;
+		var cell2;
+		var movement = getMovementShape(origin, destination);
+		if(movement[0] === 2 || movement[0] === -2){
+			if(movement[0] === 2){
+				cell1 = getCellInDirection(destination, 'E');
+				cell2 = getCellInDirection(destination, 'W');
+			}
+			if(movement[0] === -2){
+				cell1 = getCellInDirection(destination, 'W');
+				cell1 = getCellInDirection(cell1, 'W');
+				cell2 = getCellInDirection(destination, 'E');
+			}
+			chessEngine.grid[cell2].content = chessEngine.grid[cell1].content
+			chessEngine.grid[cell1].content = null;
+			chessEngine.grid[cell2].content.moved = true;
+			$('#' + cell1)[0].innerHTML = "";
+			$('#' + cell2)[0].innerHTML = "♜";
+			$('#' + cell2)[0].className = "holder " + this.color.toLowerCase();
+		}
+		super.makeMove(origin, destination);
 	}
 }

@@ -163,7 +163,7 @@ class ChessEngine {
 				stalemate();
 			}
 		}
-		console.log(this.legalMoves[color])
+		console.log(this.turn.toUpperCase() + "'s turn, legal moves: ", this.legalMoves[color])
 	}
 
 	searchForCheck(){
