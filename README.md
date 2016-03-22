@@ -12,11 +12,12 @@ Standard Rook, Bishop, Knight, Queen, and King Movement.
 Checkmate
 Stalemate
 Check
+Castling
+UI options and improvements.
 
 Not Yet Implemented:
-Castling
 50 Move Rule
 Impossibility of Checkmate
 Mutual Draws
 Player login and control
-UI options.
+
