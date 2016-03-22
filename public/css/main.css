@@ -116,3 +116,11 @@ html, body {
 .check {
 	background-color: rgba(153,25,25,.5);
 }
+
+#gameBanner{
+	padding-top: 15px;
+	font-size: 24px;
+	color: #004600;
+	margin: 0 auto;
+	width: 90%;
+}
