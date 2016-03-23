@@ -61,6 +61,16 @@
 			<label for="html5colorpicker4">Light: </label><input type="color" id="html5colorpicker4" onchange="changeTheme4()" value="#649877" style="width:85%;">
 			<div class="button" onclick="hideThemePicker()">OK</div>
 		</div>
+		<div id="colorDisplay">
+			<p>Black Or White?</p>
+			<div id="chooseBlack" onclick="requestColor('Black')">♞ Black</div>
+			<div id="chooseWhite" onclick="requestColor('White')">♞ White</div>
+		</div>
+		<div id="secondaryDisplay">
+			<p>You are connected and playing as:</p>
+			<div id="givenColor"></div>
+			<div id="acceptColor" onclick="$('#secondaryDisplay').css('visibility', 'hidden')">Ok</div>
+		</div>
 		<script type="text/javascript" src="public/js/helpers.js"></script>
 		<script type="text/javascript" src="public/js/piece.js"></script>
 		<script type="text/javascript" src="public/js/pawn.js"></script>
@@ -70,6 +80,39 @@
 		<script type="text/javascript" src="public/js/queen.js"></script>
 		<script type="text/javascript" src="public/js/king.js"></script>
 		<script type="text/javascript" src="public/js/square.js"></script>
-		<script type="text/javascript" src="public/js/main.js"></script> 
+		<script type="text/javascript" src="public/js/main.js"></script>
+		<script src="http://192.168.2.4:3000/socket.io/socket.io.js"></script>
+		<script>
+		  var socket = io("192.168.2.4:3000");
+		  socket.on('showColorDisplay', function(){
+		  	$('#colorDisplay').css('visibility', 'visible');
+		  });
+		  socket.on('sendColor', function(color){
+		  	$('#secondaryDisplay').css('visibility', 'visible');
+		  	$('#givenColor').html(color);
+		  	$('#givenColor').css('color', color.toLowerCase())
+		  	playerColor = color;
+		  });
+		  function requestColor(color){
+		  	socket.emit('requestColor', color);
+		  	playerColor = color;
+		  	$('#colorDisplay').css('visibility', 'hidden');
+		  }
+		  function sendMove(origin, destination){
+		  	socket.emit('sendMove', origin + "," + destination);
+		  }
+		  socket.on('broadcastMove', function(move){
+		  	var origin = move.split(',')[0];
+		  	var destination = move.split(',')[1];
+		  	var response = chessEngine.requestMove(origin, destination, true);
+		  	if (response){
+		  		$('#' + destination)[0].className = $('#' + origin)[0].className
+		  		$('#' + origin)[0].className = 'holder';
+		  		$('#' + destination)[0].innerHTML = $('#' + origin)[0].innerHTML
+		  		$('#' + origin)[0].innerHTML = '';
+		  		chessEngine.turnOver(origin, destination);
+		  	}
+		  });
+		</script>
   	</body>
 </html>

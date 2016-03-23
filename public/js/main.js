@@ -1,6 +1,7 @@
 'use strict'
 
 // variables
+var playerColor;
 var coordMap = [];
 var letters = ['', "a", "b", "c", "d", "e", "f", "g", "h"];
 var positions = {
@@ -68,7 +69,10 @@ class ChessEngine {
 	}
 
 
-	requestMove(origin, destination){
+	requestMove(origin, destination, remote){
+		if(!remote && !(this.turn == playerColor)){
+			return false;
+		}
 		if(this.pause){
 			return false;
 		}
@@ -275,6 +279,7 @@ class ChessEngine {
 		this.removePassants(this.turn);
 		this.searchForCheck();
 		this.calculateLegalMoves(this.turn)
+		sendMove(origin, destination);
 	}
 }
 
@@ -315,7 +320,7 @@ function drop(ev) {
     var className = ev.dataTransfer.getData("className");
     var origin = ev.dataTransfer.getData("id");
     var destination = ev.target.id;
-    var response = chessEngine.requestMove(origin, destination);
+    var response = chessEngine.requestMove(origin, destination, false);
     if (response){
     	ev.target.className = className;
     	$('#' + origin)[0].className = 'holder';
