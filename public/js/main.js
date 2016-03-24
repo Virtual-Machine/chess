@@ -115,9 +115,11 @@ class ChessEngine {
 		for(var i in upgradeSquares){
 			var check = this.grid[upgradeSquares[i]].content;
 			if(check instanceof Pawn){
+				if(check.color === playerColor){
+					$('#pieceWindow').css('visibility', 'visible');
+				}
 				$('#wYourTurn').css("visibility", "hidden");
 				$('#bYourTurn').css("visibility", "hidden");
-				$('#pieceWindow').css('visibility', 'visible');
 				$('#pieceWindow').data('coords', upgradeSquares[i])
 				$('#pieceWindow').data('color', check.color)
 				return;

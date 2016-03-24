@@ -113,6 +113,44 @@
 		  		chessEngine.turnOver(origin, destination);
 		  	}
 		  });
+		  function sendUpgrade(selection, coords, color){
+		  	socket.emit('sendUpgrade', {
+		  		selection: selection,
+		  		coords: coords,
+		  		color: color
+		  	});
+		  }
+		  socket.on('broadcastUpgrade', function(data){
+		  	var selection = data.selection;
+		  	var coords = data.coords;
+		  	var color = data.color;
+		  	switch(selection){
+		  		case 'Knight':
+		  			$('#' + coords)[0].innerHTML = "♞"
+		  			chessEngine.grid[coords].content = new Knight(color);
+		  			break;
+		  		case 'Bishop':
+		  			$('#' + coords)[0].innerHTML = "♝"
+		  			chessEngine.grid[coords].content = new Bishop(color);
+		  			break;
+		  		case 'Rook':
+		  			$('#' + coords)[0].innerHTML = "♜"
+		  			chessEngine.grid[coords].content = new Rook(color);
+		  			break;
+		  		case 'Queen':
+		  			$('#' + coords)[0].innerHTML = "♛"
+		  			chessEngine.grid[coords].content = new Queen(color);
+		  			break;
+		  	}
+		  	chessEngine.searchForCheck();
+		  	chessEngine.calculateLegalMoves(chessEngine.turn);
+		  	chessEngine.pause = false;
+		  	if(chessEngine.whiteTurn){
+		  		$('#wYourTurn').css("visibility", "visible");
+		  	} else {
+		  		$('#bYourTurn').css("visibility", "visible");
+		  	}
+		  })
 		</script>
   	</body>
 </html>

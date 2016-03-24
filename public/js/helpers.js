@@ -253,6 +253,7 @@ function submitValue(){
 	} else {
 		$('#bYourTurn').css("visibility", "visible");
 	}
+	sendUpgrade(selection, coords, color);
 }
 
 function checkmate(color){

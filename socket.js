@@ -37,6 +37,10 @@ io.on('connection', function(socket){
 		socket.broadcast.emit('broadcastMove', move);
 	})
 
+	socket.on('sendUpgrade', function(data){
+		socket.broadcast.emit('broadcastUpgrade', data);
+	})
+
 	socket.on('disconnect', function(){
 		--count
 		console.log('socket disconnected')
