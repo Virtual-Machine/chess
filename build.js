@@ -10,6 +10,7 @@ let chess = fs.readFileSync('./chess.html', 'utf-8');
 let jsDir = __dirname + "/public/js/";
 let jsFiles = [jsDir + "jqlite.min.js", jsDir + "helpers.js", jsDir + "piece.js", jsDir + "pawn.js", jsDir + "rook.js", jsDir + "knight.js", jsDir + "bishop.js", jsDir + "king.js", jsDir + "queen.js", jsDir + "square.js", jsDir + "main.js"]
 let main = UglifyJS.minify(jsFiles);
+
 let maincss = fs.readFileSync('./public/css/main.css', 'utf-8');
 
 let minified = new CleanCSS().minify(maincss).styles;
@@ -26,5 +27,6 @@ chess = chess.replace("<script type=\"text/javascript\" src=\"public/js/bishop.j
 chess = chess.replace("<script type=\"text/javascript\" src=\"public/js/king.js\"></script>", "")
 chess = chess.replace("<script type=\"text/javascript\" src=\"public/js/queen.js\"></script>", "")
 chess = chess.replace("<script type=\"text/javascript\" src=\"public/js/main.js\"></script>", "<script>" + main.code + "</script>")
+chess = chess.replace(/document\.styleSheets\[1\]/g, "document.styleSheets[0]")
 
 fs.writeFileSync('chess-demo.html', chess);
