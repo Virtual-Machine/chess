@@ -12,8 +12,33 @@ io.on('connection', function(socket){
 		primary = socket
 		primary.emit('showColorDisplay')
 		console.log('primary user connected')
+		primary.on('requestColor', function(color){
+			if(color === 'White'){
+				holdColor = 'Black'
+			} else {
+				holdColor = 'White'
+			}
+			if(secondary){
+				secondary.emit('sendColor', holdColor);
+			}
+		})
+
+		primary.on('drawOffer', function(){
+			secondary.emit('drawOffered');
+		})
+
+
+		primary.on('declineOffer', function(){
+			secondary.emit('offerDeclined');
+		})
 	} else if(count == 2){
 		secondary = socket
+		secondary.on('drawOffer', function(){
+			primary.emit('drawOffered');
+		})
+		secondary.on('declineOffer', function(){
+			primary.emit('offerDeclined');
+		})
 		if(holdColor){
 			secondary.emit('sendColor', holdColor);
 		}
@@ -22,23 +47,16 @@ io.on('connection', function(socket){
 		console.log('spectator connected')
 	}
 
-	primary.on('requestColor', function(color){
-		if(color === 'White'){
-			holdColor = 'Black'
-		} else {
-			holdColor = 'White'
-		}
-		if(secondary){
-			secondary.emit('sendColor', holdColor);
-		}
-	})
-
 	socket.on('sendMove', function(move){
 		socket.broadcast.emit('broadcastMove', move);
 	})
 
 	socket.on('sendUpgrade', function(data){
 		socket.broadcast.emit('broadcastUpgrade', data);
+	})
+
+	socket.on('acceptOffer', function(){
+		socket.broadcast.emit('offerAccepted');
 	})
 
 	socket.on('disconnect', function(){

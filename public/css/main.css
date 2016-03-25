@@ -238,3 +238,77 @@ html, body {
 #acceptColor:hover {
 	background-color: #0a0;
 }
+
+.drawButton {
+	visibility: hidden;
+	background-color: #008;
+	color: #ddd;
+	width: 100px;
+	height: 25px;
+	padding: 10px;
+	border-radius: 10px;
+	cursor: pointer;
+	margin: 40px auto;
+}
+
+.drawButton:hover {
+	background-color: #00b;
+}
+
+#drawOffer {
+	position: absolute;
+	left: 0px; right: 0px; top: 0px; bottom: 0px;
+	width: 300px;
+	height: 300px;
+	background-color: #666;
+	visibility: hidden;
+	margin: auto;
+	text-align: center;
+	border-radius: 20px;
+	font-size: 25px;
+}
+
+#acceptOffer {
+	background-color: #080;
+	font-size: 50px;
+	color: #ddd;
+	cursor: pointer;
+}
+
+#acceptOffer:hover {
+	background-color: #0b0;
+}
+
+#declineOffer {
+	margin-top: 20px;
+	color: #ddd;
+	background-color: #800;
+	font-size: 50px;
+	cursor: pointer;
+}
+
+#declineOffer:hover {
+	background-color: #b00;
+}
+
+#offerResults {
+	position: absolute;
+	left: 0px; right: 0px; top: 0px; bottom: 0px;
+	width: 300px;
+	height: 200px;
+	background-color: #666;
+	visibility: hidden;
+	margin: auto;
+	text-align: center;
+	border-radius: 20px;
+	font-size: 25px;
+}
+
+#closeResultsButton {
+	margin-top: 20px;
+	background-color: green;
+	color: white;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	cursor: pointer;
+}

@@ -22,6 +22,8 @@
 				<br>
 				<br>
 				<span id="bYourTurn">Your Turn!</span>
+				<br>
+				<div id="offerDrawBlack" class='drawButton' onclick='sendDrawOffer()'>Offer Draw</div>
 			</div>
 			<div class="playerWhite">
 				<br>
@@ -34,6 +36,8 @@
 				<br>
 				<br>
 				<span id="wYourTurn">Your Turn!</span>
+				<br>
+				<div id="offerDrawWhite" class='drawButton' onclick='sendDrawOffer()'>Offer Draw</div>
 			</div>
 			<div class="themeEditorButton" onclick="$('#themePicker').css('visibility', 'visible')">UI &#9881
 			</div>
@@ -71,6 +75,15 @@
 			<div id="givenColor"></div>
 			<div id="acceptColor" onclick="$('#secondaryDisplay').css('visibility', 'hidden')">Ok</div>
 		</div>
+		<div id="drawOffer">
+			<p>Your opponent is offering a draw:</p>
+			<div id="acceptOffer" onclick="acceptOffer()">Accept</div>
+			<div id="declineOffer" onclick="declineOffer()">Decline</div>
+		</div>
+		<div id="offerResults">
+			<p id='resultText'></p>
+			<div id="closeResultsButton" onclick="$('#offerResults').css('visibility', 'hidden')">Ok</div>
+		</div>
 		<script type="text/javascript" src="public/js/helpers.js"></script>
 		<script type="text/javascript" src="public/js/piece.js"></script>
 		<script type="text/javascript" src="public/js/pawn.js"></script>
@@ -92,10 +105,12 @@
 		  	$('#givenColor').html(color);
 		  	$('#givenColor').css('color', color.toLowerCase())
 		  	playerColor = color;
+		  	$('#offerDraw' + color).css('visibility', 'visible');
 		  });
 		  function requestColor(color){
 		  	socket.emit('requestColor', color);
 		  	playerColor = color;
+		  	$('#offerDraw' + color).css('visibility', 'visible');
 		  	$('#colorDisplay').css('visibility', 'hidden');
 		  }
 		  function sendMove(origin, destination){
@@ -150,6 +165,30 @@
 		  	} else {
 		  		$('#bYourTurn').css("visibility", "visible");
 		  	}
+		  })
+		  function sendDrawOffer(){
+		  	socket.emit('drawOffer');
+		  }
+		  socket.on('drawOffered', function(){
+		  	$('#drawOffer').css("visibility", "visible");
+		  });
+		  function acceptOffer(){
+		  	$('#drawOffer').css("visibility", "hidden");
+		  	$('#gameBanner')[0].innerHTML = "Gameover: Mutual draw."
+		  	socket.emit('acceptOffer');
+		  }
+		  function declineOffer(){
+		  	$('#drawOffer').css("visibility", "hidden");
+		  	socket.emit('declineOffer');
+		  }
+		  socket.on('offerDeclined', function(){
+		  	$('#resultText')[0].innerHTML = "Your offer was declined";
+		  	$('#offerResults').css('visibility', 'visible');
+		  })
+		  socket.on('offerAccepted', function(){
+		  	$('#resultText')[0].innerHTML = "The game has ended in mutual draw";
+		  	$('#gameBanner')[0].innerHTML = "Gameover: Mutual draw."
+		  	$('#offerResults').css('visibility', 'visible');
 		  })
 		</script>
   	</body>

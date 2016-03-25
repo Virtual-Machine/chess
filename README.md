@@ -14,10 +14,11 @@ Stalemate
 Check
 Castling
 UI options and improvements.
+Player login and control
 
 Not Yet Implemented:
 50 Move Rule
 Impossibility of Checkmate
 Mutual Draws
-Player login and control
+
 
