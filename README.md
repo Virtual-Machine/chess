@@ -14,11 +14,11 @@ Stalemate
 Check
 Castling
 UI options and improvements.
-Player login and control
+Socket control of colors.
+Mutual Draws
 
 Not Yet Implemented:
 50 Move Rule
 Impossibility of Checkmate
-Mutual Draws
-
+Player login
 
