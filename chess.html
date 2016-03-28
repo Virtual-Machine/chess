@@ -196,6 +196,17 @@
 		  	$('#gameBanner')[0].innerHTML = "Gameover: Mutual draw."
 		  	$('#offerResults').css('visibility', 'visible');
 		  })
+
+		  function sendMessage(data){
+		  	socket.emit('sendMessage', playerColor + " ~ " + data);
+		  }
+		  socket.on('pulseMessage', function(data){
+		  	var p = document.createElement("p");
+		  	var message = $(p).text(data).html();
+		  	$(p).text(message);
+		  	$('.chatList').prepend(p);
+		  	$('.chatList')[0].scrollTop = 0;
+		  });
 		</script>
   	</body>
 </html>

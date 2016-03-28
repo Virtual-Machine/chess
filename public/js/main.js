@@ -332,3 +332,11 @@ function drop(ev) {
     }
 }
 
+$('#chatBox').on("keypress", function(event){
+	if(event.which === 13){
+		var data = $('#chatBox').val()
+		$('#chatBox').val("");
+		sendMessage(data);
+	}
+})
+

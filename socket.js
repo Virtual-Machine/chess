@@ -59,6 +59,10 @@ io.on('connection', function(socket){
 		socket.broadcast.emit('offerAccepted');
 	})
 
+	socket.on('sendMessage', function(data){
+		io.emit('pulseMessage', data);
+	});
+
 	socket.on('disconnect', function(){
 		--count
 		console.log('socket disconnected')
