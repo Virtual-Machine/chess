@@ -15,10 +15,10 @@
 				<br>
 				<div>Black</div>
 				<br>
-				<label for="bName">Name: </label><input id='bName' type="text">
+				<label for="bName">Name: </label><input id='bName' type="text" disabled>
 				<br>
 				<br>
-				<label for="bName">Piece Value: </label><span id="bPieceValue"></span>
+				<label for="bPieceValue">Piece Value: </label><span id="bPieceValue"></span>
 				<br>
 				<br>
 				<span id="bYourTurn">Your Turn!</span>
@@ -29,10 +29,10 @@
 				<br>
 				<div>White</div>
 				<br>
-				<label for="wName">Name: </label><input id='wName' type="text">
+				<label for="wName">Name: </label><input id='wName' type="text" disabled>
 				<br>
 				<br>
-				<label for="wName">Piece Value: </label><span id="wPieceValue"></span>
+				<label for="wPieceValue">Piece Value: </label><span id="wPieceValue"></span>
 				<br>
 				<br>
 				<span id="wYourTurn">Your Turn!</span>
@@ -72,14 +72,16 @@
 			<div class="button" onclick="hideThemePicker()">OK</div>
 		</div>
 		<div id="colorDisplay">
+			<label for="p1Name">Name: </label><input id="p1Name" type="text">
 			<p>Black Or White?</p>
 			<div id="chooseBlack" onclick="requestColor('Black')">♞ Black</div>
 			<div id="chooseWhite" onclick="requestColor('White')">♞ White</div>
 		</div>
 		<div id="secondaryDisplay">
+			<label for="p2Name">Name: </label><input id="p2Name" type="text">
 			<p>You are connected and playing as:</p>
 			<div id="givenColor"></div>
-			<div id="acceptColor" onclick="$('#secondaryDisplay').css('visibility', 'hidden')">Ok</div>
+			<div id="acceptColor" onclick="acceptColorDialog()">Ok</div>
 		</div>
 		<div id="drawOffer">
 			<p>Your opponent is offering a draw:</p>
@@ -116,6 +118,17 @@
 		  function requestColor(color){
 		  	socket.emit('requestColor', color);
 		  	playerColor = color;
+		  	var name = $('#p1Name').val();
+		  	if(name == null){
+		  		name = playerColor;
+		  	}
+		  	socket.emit('name1', name);
+		  	if (color === 'White'){
+		  		$('#wName').val(name);
+		  	} else {
+		  		$('#bName').val(name);
+		  	}
+
 		  	$('#offerDraw' + color).css('visibility', 'visible');
 		  	$('#colorDisplay').css('visibility', 'hidden');
 		  }
@@ -198,7 +211,20 @@
 		  })
 
 		  function sendMessage(data){
-		  	socket.emit('sendMessage', playerColor + " ~ " + data);
+		  	var name;
+		  	if(playerColor === 'White'){
+		  		name = $('#wName').val();
+		  	} else if (playerColor === 'Black'){
+		  		name = $('#bName').val();
+		  	}
+		  	if(playerColor){
+		  		if (name == null){
+		  			name = playerColor;
+		  		}
+		  	} else {
+		  		name = "Spectator"
+		  	}
+		  	socket.emit('sendMessage', name + " ~ " + data);
 		  }
 		  socket.on('pulseMessage', function(data){
 		  	var p = document.createElement("p");
@@ -207,6 +233,28 @@
 		  	$('.chatList').prepend(p);
 		  	$('.chatList')[0].scrollTop = 0;
 		  });
+		  function acceptColorDialog(){
+		  	var name = $('#p2Name').val()
+		  	if(name == null){
+		  		name = playerColor;
+		  	}
+		  	if (playerColor === 'White'){
+		  		$('#wName').val(name);
+		  	} else {
+		  		$('#bName').val(name);
+		  	}
+		  	socket.emit('name2', name);
+		  	$('#secondaryDisplay').css('visibility', 'hidden')
+
+		  }
+		  socket.on('nameUpdate', function(name){
+		  	if(playerColor === 'White'){
+		  		$('#bName').val(name)
+		  	}
+		  	if(playerColor === 'Black'){
+		  		$('#wName').val(name)
+		  	}
+		  })
 		</script>
   	</body>
 </html>

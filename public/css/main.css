@@ -204,6 +204,7 @@ html, body {
 }
 
 #colorDisplay {
+	padding-top: 10px;
 	position: absolute;
 	left: 0px; right: 0px; top: 0px; bottom: 0px;
 	width: 300px;
@@ -240,6 +241,7 @@ html, body {
 }
 
 #secondaryDisplay {
+	padding-top: 10px;
 	position: absolute;
 	left: 0px; right: 0px; top: 0px; bottom: 0px;
 	width: 300px;
