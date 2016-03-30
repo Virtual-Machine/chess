@@ -2,17 +2,26 @@ var app = require('express')()
 var http = require('http').Server(app)
 var io = require('socket.io')(http)
 
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/chess-demo.html');
+});
+
+
+
 var count = 0
 var primary
+var primaryAddress
+var secondaryAddress
 var holdColor
 var p1Name
 var p2Name
 var secondary
 io.on('connection', function(socket){
+	console.log(socket.handshake.address);
 	++count
-	if(count == 1){
-		p1Name = null;
-		p2Name = null;
+	if(count == 1 || socket.handshake.address === primaryAddress){
+		primaryAddress = socket.handshake.address;
+		partReset();
 		primary = socket
 		primary.emit('showColorDisplay')
 		console.log('primary user connected')
@@ -38,12 +47,16 @@ io.on('connection', function(socket){
 			secondary.emit('drawOffered');
 		})
 
+		primary.on('resetServer', function(){
+			fullReset();
+		});
+
 
 		primary.on('declineOffer', function(){
 			secondary.emit('offerDeclined');
 		})
-	} else if(count == 2){
-
+	} else if(count == 2 || socket.handshake.address === secondaryAddress){
+		secondaryAddress = socket.handshake.address
 		secondary = socket
 		secondary.on('drawOffer', function(){
 			primary.emit('drawOffered');
@@ -54,6 +67,10 @@ io.on('connection', function(socket){
 		secondary.on('name2', function(name){
 			primary.emit('nameUpdate', name)
 		})
+
+		secondary.on('resetServer', function(){
+			fullReset();
+		});
 
 		if(holdColor){
 			secondary.emit('sendColor', holdColor);
@@ -83,10 +100,24 @@ io.on('connection', function(socket){
 	});
 
 	socket.on('disconnect', function(){
-		--count
 		console.log('socket disconnected')
 	})
 })
+
+function fullReset(){
+	count = 0;
+	primary = null;
+	secondary = null;
+	primaryAddress = null;
+	secondaryAddress = null;
+	partReset();
+}
+
+function partReset(){
+	holdColor = null;
+	p1Name = null;
+	p2Name = null;
+}
 
 http.listen(3000, function(){
 	console.log('listening on *:3000')

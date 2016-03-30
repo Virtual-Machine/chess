@@ -39,7 +39,9 @@
 				<br>
 				<div id="offerDrawWhite" class='drawButton' onclick='sendDrawOffer()'>Offer Draw</div>
 			</div>
-			<div class="themeEditorButton" onclick="$('#themePicker').css('visibility', 'visible')">UI &#9881
+			<div class="serverResetButton" onclick="serverReset()">Reload Server &#8635;
+			</div>
+			<div class="themeEditorButton" onclick="$('#themePicker').css('visibility', 'visible')">UI &#9881;
 			</div>
 			</div>
 			<div class="moveListPanel">
@@ -255,6 +257,10 @@
 		  		$('#wName').val(name)
 		  	}
 		  })
+
+		  function serverReset(){
+		  	socket.emit('serverReset');
+		  }
 		</script>
   	</body>
 </html>

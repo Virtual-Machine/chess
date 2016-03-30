@@ -199,6 +199,21 @@ html, body {
 	background-color: #333;
 }
 
+.serverResetButton{
+	color: #eee;
+	font-family: Verdana;
+	position: absolute;
+	background-color: #522;
+	width: 150px;
+	line-height: 26px;
+	bottom: 0px;
+	cursor: pointer
+}
+
+.serverResetButton:hover{
+	background-color: #500;
+}
+
 #headerText {
 	color: #D6812D;
 }
